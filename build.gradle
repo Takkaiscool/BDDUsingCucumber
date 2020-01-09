@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'io.cucumber:cucumber-java8:4.7.4'
+    testImplementation 'io.cucumber:cucumber-junit:4.7.4'
+}
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+task cucumber() {
+    dependsOn assemble, compileTestJava
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime+  sourceSets.test.output
+            args = ['--plugin', 'pretty','--glue','step_definations', 'src/test/resources/Features']
+        }
+    }
+}
